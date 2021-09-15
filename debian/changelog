@@ -1,10 +1,3 @@
-lua-resty-core (0.1.19-dk2-buster2) buster; urgency=medium
-
-  * O3 g3 compile flag.
-  * backport to buster.
-
- -- Dwi Kristianto <steamboatid@gmail.com>  Sat, 30 Oct 2020 13:24:00 +0700
-
 lua-resty-core (0.1.19-1chl1~bionic1) bionic; urgency=medium
 
   * Initial packaging.
