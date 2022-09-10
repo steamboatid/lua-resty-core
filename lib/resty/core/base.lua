@@ -3,6 +3,7 @@
 
 local ffi = require 'ffi'
 local ffi_new = ffi.new
+local pcall = pcall
 local error = error
 local select = select
 local ceil = math.ceil
@@ -16,10 +17,9 @@ local FREE_LIST_REF = 0
 
 
 if subsystem == 'http' then
-    local ngx_lua_v = ngx.config.ngx_lua_version
     if not ngx.config
        or not ngx.config.ngx_lua_version
-       or ngx_lua_v ~= 10021
+       or ngx.config.ngx_lua_version ~= 10021
     then
         error("ngx_http_lua_module 0.10.21 required")
     end
@@ -69,9 +69,17 @@ end
 do
     local orig_require = require
     local pkg_loaded = package.loaded
+    -- the key_sentinel is inserted into package.loaded before
+    -- the chunk is executed and replaced if the chunk completes normally.
+    local key_sentinel = pkg_loaded[...]
+
     local function my_require(name)
         local mod = pkg_loaded[name]
         if mod then
+            if mod == key_sentinel then
+                error("loop or previous error loading module '" .. name .. "'")
+            end
+
             return mod
         end
         return orig_require(name)
